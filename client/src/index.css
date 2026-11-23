@@ -1,17 +1,63 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Fraunces', Georgia, serif;
+
+  /* indigo -> teal ink */
+  --color-indigo-50: #eef7f7;
+  --color-indigo-100: #d6ecec;
+  --color-indigo-200: #aedada;
+  --color-indigo-300: #7cc0c1;
+  --color-indigo-400: #45a0a3;
+  --color-indigo-500: #1f8083;
+  --color-indigo-600: #146468;
+  --color-indigo-700: #0f4f53;
+  --color-indigo-800: #0d3f43;
+  --color-indigo-900: #0a2f33;
+
+  /* violet -> sunrise coral */
+  --color-violet-50: #fff1ed;
+  --color-violet-100: #ffe0d6;
+  --color-violet-200: #ffc2ae;
+  --color-violet-300: #ff9d80;
+  --color-violet-400: #ff7a55;
+  --color-violet-500: #f65d37;
+  --color-violet-600: #e0441f;
+  --color-violet-700: #b93418;
+  --color-violet-800: #962f1a;
+  --color-violet-900: #7a2b1b;
 }
 
 body {
-  background: #f8fafc;
-  color: #0f172a;
+  background: #fbf7f0;
+  color: #12302f;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.float { animation: float 5s ease-in-out infinite; }
+
+.fade-up { animation: fade-up 0.45s ease both; }
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .btn-primary {
-  @apply inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-60;
+  @apply inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60;
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50;
 }
 
 .input {
