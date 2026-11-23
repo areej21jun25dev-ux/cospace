@@ -4,6 +4,7 @@ import {
   CalendarDays, Clock, Layers, AlertCircle, CheckCircle2, CalendarX, X,
 } from 'lucide-react';
 import api from '../api';
+import { useToast } from '../context/ToastContext';
 
 const fmtDate = (iso) =>
   new Date(iso).toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
@@ -59,6 +60,7 @@ function BookingCard({ booking, onCancel, past }) {
 }
 
 export default function MyBookings() {
+  const toast = useToast();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -94,10 +96,13 @@ export default function MyBookings() {
     try {
       await api.delete(`/bookings/${toCancel._id}`);
       setNotice('Booking cancelled.');
+      toast.success('Booking cancelled');
       setToCancel(null);
       await load();
     } catch (err) {
-      setError(err.response?.data?.message || 'Could not cancel booking');
+      const msg = err.response?.data?.message || 'Could not cancel booking';
+      setError(msg);
+      toast.error(msg);
       setToCancel(null);
     } finally {
       setCancelling(false);

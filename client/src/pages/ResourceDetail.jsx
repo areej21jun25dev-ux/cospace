@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useToast } from '../context/ToastContext';
 import {
   ArrowLeft, Armchair, Users, Layers, Check, CalendarDays, Clock,
   AlertCircle, CheckCircle2,
@@ -18,7 +19,12 @@ const fmt = (iso) =>
 export default function ResourceDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-
+  const toast = useToast();
+  const quickSlots = [
+    ['09:00', '10:00'], ['10:00', '11:00'], ['11:00', '12:00'],
+    ['12:00', '13:00'], ['14:00', '15:00'], ['15:00', '16:00'],
+    ['16:00', '17:00'], ['09:00', '13:00'], ['14:00', '18:00'],
+  ];
   const [resource, setResource] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
@@ -65,9 +71,11 @@ export default function ResourceDetail() {
         endTime: new Date(`${date}T${end}`).toISOString(),
       });
       setSuccess('Booking confirmed!');
+         toast.success('Booking confirmed!');
       loadBooked();
     } catch (err) {
       setError(err.response?.data?.message || 'Booking failed');
+            toast.error(err.response?.data?.message || 'Booking failed');
     } finally {
       setSubmitting(false);
     }
@@ -185,7 +193,25 @@ export default function ResourceDetail() {
               required
             />
           </div>
-
+          <div className="mt-4">
+            <p className="mb-2 text-sm font-medium">Quick slots</p>
+            <div className="flex flex-wrap gap-2">
+              {quickSlots.map(([s, e]) => (
+                <button
+                  type="button"
+                  key={s + e}
+                  onClick={() => { setStart(s); setEnd(e); }}
+                  className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
+                    start === s && end === e
+                      ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
+                      : 'border-slate-300 hover:bg-slate-50'
+                  }`}
+                >
+                  {s} - {e}
+                </button>
+              ))}
+            </div>
+          </div>
           <div className="mt-4 grid grid-cols-2 gap-4">
             <div>
               <label className="mb-1 flex items-center gap-1 text-sm font-medium">
