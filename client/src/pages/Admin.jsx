@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Plus, Pencil, Trash2, AlertCircle, CheckCircle2, X } from 'lucide-react';
 import api from '../api';
+import { useToast } from '../context/ToastContext';
 
-const emptyForm = { name: '', type: 'desk', floor: 1, capacity: 1, amenities: '' };
+const emptyForm = {
+  name: '', type: 'desk', floor: 1, capacity: 1, amenities: '',
+  location: '', price: 0, image: '',
+};
 
 const fmtDate = (iso) =>
   new Date(iso).toLocaleDateString([], { day: 'numeric', month: 'short', year: 'numeric' });
@@ -10,6 +14,7 @@ const fmtTime = (iso) =>
   new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
 export default function Admin() {
+  const toast = useToast();
   const [tab, setTab] = useState('resources');
   const [resources, setResources] = useState([]);
   const [bookings, setBookings] = useState([]);
@@ -57,6 +62,9 @@ export default function Admin() {
       floor: r.floor,
       capacity: r.capacity,
       amenities: r.amenities.join(', '),
+      location: r.location || '',
+      price: r.price || 0,
+      image: r.image || '',
     });
     setFormError('');
     setFormOpen(true);
@@ -72,11 +80,16 @@ export default function Admin() {
       floor: Number(form.floor),
       capacity: Number(form.capacity),
       amenities: form.amenities.split(',').map((a) => a.trim()).filter(Boolean),
+      location: form.location,
+      price: Number(form.price),
+      image: form.image,
     };
     try {
       if (editing) await api.put(`/resources/${editing._id}`, payload);
       else await api.post('/resources', payload);
-      setNotice(editing ? 'Resource updated.' : 'Resource added.');
+      const msg = editing ? 'Resource updated.' : 'Resource added.';
+      setNotice(msg);
+      toast.success(msg);
       setFormOpen(false);
       await loadAll();
     } catch (err) {
@@ -90,6 +103,7 @@ export default function Admin() {
     try {
       await api.delete(`/resources/${toDelete._id}`);
       setNotice('Resource removed.');
+      toast.success('Resource removed.');
       await loadAll();
     } catch (err) {
       setError(err.response?.data?.message || 'Could not delete');
@@ -102,6 +116,7 @@ export default function Admin() {
     try {
       await api.delete(`/bookings/${b._id}`);
       setNotice('Booking cancelled.');
+      toast.success('Booking cancelled.');
       await loadAll();
     } catch (err) {
       setError(err.response?.data?.message || 'Could not cancel');
@@ -170,8 +185,10 @@ export default function Admin() {
               <tr>
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">Type</th>
+                <th className="px-4 py-3">Location</th>
                 <th className="px-4 py-3">Floor</th>
                 <th className="px-4 py-3">Capacity</th>
+                <th className="px-4 py-3">Price/hr</th>
                 <th className="px-4 py-3">Amenities</th>
                 <th className="px-4 py-3 text-right">Actions</th>
               </tr>
@@ -181,8 +198,10 @@ export default function Admin() {
                 <tr key={r._id} className="border-t border-slate-100">
                   <td className="px-4 py-3 font-medium">{r.name}</td>
                   <td className="px-4 py-3 capitalize">{r.type}</td>
+                  <td className="px-4 py-3">{r.location || '-'}</td>
                   <td className="px-4 py-3">{r.floor}</td>
                   <td className="px-4 py-3">{r.capacity}</td>
+                  <td className="px-4 py-3">{r.price ? `Rs ${r.price}` : '-'}</td>
                   <td className="px-4 py-3 text-slate-500">{r.amenities.join(', ')}</td>
                   <td className="px-4 py-3">
                     <div className="flex justify-end gap-2">
@@ -197,7 +216,7 @@ export default function Admin() {
                 </tr>
               ))}
               {resources.length === 0 && (
-                <tr><td colSpan="6" className="px-4 py-8 text-center text-slate-500">No resources yet</td></tr>
+                <tr><td colSpan="8" className="px-4 py-8 text-center text-slate-500">No resources yet</td></tr>
               )}
             </tbody>
           </table>
@@ -253,8 +272,8 @@ export default function Admin() {
 
       {/* Add / Edit modal */}
       {formOpen && (
-        <div className="fixed inset-0 z-20 flex items-center justify-center bg-slate-900/50 p-4">
-          <form onSubmit={handleSave} className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+        <div className="fixed inset-0 z-20 flex items-center justify-center overflow-y-auto bg-slate-900/50 p-4">
+          <form onSubmit={handleSave} className="my-auto w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
             <h3 className="text-lg font-semibold">{editing ? 'Edit resource' : 'Add resource'}</h3>
             {formError && <p className="mt-3 rounded-lg bg-red-50 p-3 text-sm text-red-700">{formError}</p>}
 
@@ -283,6 +302,20 @@ export default function Admin() {
               <div>
                 <label className="mb-1 block text-sm font-medium">Amenities (comma separated)</label>
                 <input className="input" placeholder="projector, whiteboard" value={form.amenities} onChange={set('amenities')} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="mb-1 block text-sm font-medium">Location</label>
+                  <input className="input" placeholder="Gulberg Branch" value={form.location} onChange={set('location')} />
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium">Price per hour (Rs)</label>
+                  <input type="number" min="0" className="input" value={form.price} onChange={set('price')} />
+                </div>
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">Image URL (optional)</label>
+                <input className="input" placeholder="https://..." value={form.image} onChange={set('image')} />
               </div>
             </div>
 

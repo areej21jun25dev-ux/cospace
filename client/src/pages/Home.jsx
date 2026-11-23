@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  CalendarCheck, Armchair, Users, ShieldCheck, Search,
-  MousePointerClick, ArrowRight, Clock, Check, Zap,
+  CalendarCheck, Armchair, Users, ShieldCheck, Search, MousePointerClick, ArrowRight,
+  Clock, Check, Zap, Wifi, BatteryCharging, Camera, Car, Printer, Coffee, Lock,
+  Snowflake, Headset, Presentation, MapPin, Star, ChevronDown,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -17,15 +19,39 @@ const steps = [
   { icon: MousePointerClick, title: 'Confirm', text: 'Done. Manage it anytime in My Bookings.' },
 ];
 
-const stats = [
-  { value: '8+', label: 'Spaces' },
-  { value: '3', label: 'Floors' },
-  { value: '0', label: 'Double bookings' },
-  { value: '24/7', label: 'Booking access' },
+const amenities = [
+  { icon: Wifi, label: 'High speed WiFi' },
+  { icon: BatteryCharging, label: 'Backup power' },
+  { icon: Camera, label: 'CCTV security' },
+  { icon: Car, label: 'Secure parking' },
+  { icon: Printer, label: 'Printing and scanning' },
+  { icon: Coffee, label: 'Tea and coffee' },
+  { icon: Lock, label: 'Personal lockers' },
+  { icon: Snowflake, label: 'Fully air conditioned' },
+  { icon: Headset, label: 'Front desk support' },
+  { icon: Presentation, label: 'Projector rooms' },
+];
+
+const locations = [
+  { name: 'Gulberg Branch', text: 'Desks and a huddle room, close to the main market.', spaces: '4 spaces' },
+  { name: 'DHA Branch', text: 'Desks with a view, plus our biggest meeting rooms.', spaces: '4 spaces' },
+];
+
+const reviews = [
+  { name: 'Sample user', role: 'Freelancer', text: 'Booking a desk takes seconds, and I can see what is free before I pick.' },
+  { name: 'Sample user', role: 'Startup founder', text: 'Our team reserves the meeting room without any back and forth now.' },
+  { name: 'Sample user', role: 'Office manager', text: 'The admin dashboard shows every booking in one place. Very handy.' },
+];
+
+const faqs = [
+  { q: 'How do I book a space?', a: 'Create an account, open Resources, choose a desk or room, pick a date and time, and confirm.' },
+  { q: 'Can I cancel a booking?', a: 'Yes. Open My Bookings and cancel any upcoming booking. The slot becomes free for others.' },
+  { q: 'What happens if a slot is taken?', a: 'The system blocks double booking and shows which times are already booked that day.' },
 ];
 
 export default function Home() {
   const { user } = useAuth();
+  const [openFaq, setOpenFaq] = useState(0);
   const cta = user ? '/resources' : '/register';
 
   return (
@@ -41,8 +67,7 @@ export default function Home() {
               <Zap size={14} className="text-violet-300" /> Desk and meeting room booking
             </span>
             <h1 className="mt-5 text-4xl font-extrabold leading-tight md:text-6xl">
-              Your next great day starts with the{' '}
-              <span className="text-violet-300">right desk</span>
+              Your next great day starts with the <span className="text-violet-300">right desk</span>
             </h1>
             <p className="mt-4 max-w-md text-indigo-100">
               CoSpace helps your team reserve desks and meeting rooms in seconds, without the back and forth.
@@ -62,7 +87,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Mock booking card */}
           <div className="float mx-auto w-full max-w-sm">
             <div className="rounded-2xl bg-white p-5 text-slate-800 shadow-2xl">
               <div className="flex items-center justify-between">
@@ -95,23 +119,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Stats */}
-      <section className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
-        {stats.map((s) => (
-          <div key={s.label} className="rounded-2xl border border-indigo-100 bg-white p-5 text-center">
-            <p className="font-display text-3xl font-bold text-indigo-700">{s.value}</p>
-            <p className="mt-1 text-sm text-slate-500">{s.label}</p>
-          </div>
-        ))}
-      </section>
-
       {/* Features */}
-      <section className="mt-14 grid gap-5 md:grid-cols-3">
+      <section className="mt-12 grid gap-5 md:grid-cols-3">
         {features.map(({ icon: Icon, title, text, color }) => (
-          <div
-            key={title}
-            className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
-          >
+          <div key={title} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
             <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${color}`}>
               <Icon size={24} />
             </div>
@@ -133,6 +144,80 @@ export default function Home() {
               <p className="mt-4 text-xs font-bold tracking-widest text-violet-600">STEP {i + 1}</p>
               <h3 className="text-lg font-semibold">{title}</h3>
               <p className="mt-1 text-sm text-slate-600">{text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Amenities */}
+      <section className="mt-16">
+        <h2 className="text-center text-3xl font-bold">Everything you need to work</h2>
+        <p className="mx-auto mt-2 max-w-xl text-center text-slate-500">
+          Every space comes ready to use, so you can focus on the work.
+        </p>
+        <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-5">
+          {amenities.map(({ icon: Icon, label }) => (
+            <div key={label} className="rounded-2xl border border-indigo-100 bg-white p-4 text-center transition hover:-translate-y-1 hover:shadow-md">
+              <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+                <Icon size={22} />
+              </div>
+              <p className="mt-3 text-sm font-medium">{label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Locations */}
+      <section className="mt-16">
+        <h2 className="text-center text-3xl font-bold">Our locations</h2>
+        <div className="mt-8 grid gap-5 md:grid-cols-2">
+          {locations.map((l) => (
+            <div key={l.name} className="flex items-start gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-600">
+                <MapPin size={24} />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold">{l.name}</h3>
+                <p className="mt-1 text-sm text-slate-600">{l.text}</p>
+                <p className="mt-2 text-xs font-semibold text-indigo-700">{l.spaces}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="mt-16">
+        <h2 className="text-center text-3xl font-bold">What teams say</h2>
+        <div className="mt-8 grid gap-5 md:grid-cols-3">
+          {reviews.map((r, i) => (
+            <div key={i} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="flex gap-1 text-amber-400">
+                {[1, 2, 3, 4, 5].map((s) => <Star key={s} size={16} fill="currentColor" />)}
+              </div>
+              <p className="mt-3 text-sm text-slate-700">"{r.text}"</p>
+              <p className="mt-4 text-sm font-semibold">{r.name}</p>
+              <p className="text-xs text-slate-500">{r.role}</p>
+            </div>
+          ))}
+        </div>
+        <p className="mt-3 text-center text-xs text-slate-400">Sample feedback for demo purposes.</p>
+      </section>
+
+      {/* FAQ */}
+      <section className="mx-auto mt-16 max-w-2xl">
+        <h2 className="text-center text-3xl font-bold">Questions</h2>
+        <div className="mt-6 space-y-3">
+          {faqs.map((f, i) => (
+            <div key={f.q} className="rounded-xl border border-slate-200 bg-white">
+              <button
+                onClick={() => setOpenFaq(openFaq === i ? -1 : i)}
+                className="flex w-full items-center justify-between px-4 py-3 text-left font-medium"
+              >
+                {f.q}
+                <ChevronDown size={18} className={`transition ${openFaq === i ? 'rotate-180' : ''}`} />
+              </button>
+              {openFaq === i && <p className="px-4 pb-4 text-sm text-slate-600">{f.a}</p>}
             </div>
           ))}
         </div>

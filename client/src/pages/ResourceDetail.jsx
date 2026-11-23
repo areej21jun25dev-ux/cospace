@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
 import {
   ArrowLeft, Armchair, Users, Layers, Check, CalendarDays, Clock,
-  AlertCircle, CheckCircle2,
+  AlertCircle, CheckCircle2, MapPin,
 } from 'lucide-react';
 import api from '../api';
 
@@ -71,11 +71,12 @@ export default function ResourceDetail() {
         endTime: new Date(`${date}T${end}`).toISOString(),
       });
       setSuccess('Booking confirmed!');
-         toast.success('Booking confirmed!');
+      toast.success('Booking confirmed!');
       loadBooked();
     } catch (err) {
-      setError(err.response?.data?.message || 'Booking failed');
-            toast.error(err.response?.data?.message || 'Booking failed');
+      const msg = err.response?.data?.message || 'Booking failed';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setSubmitting(false);
     }
@@ -120,6 +121,18 @@ export default function ResourceDetail() {
           </div>
           <h1 className="mt-4 text-2xl font-bold">{resource.name}</h1>
           <p className="text-sm text-slate-500">{isRoom ? 'Meeting room' : 'Desk'}</p>
+
+          {resource.location && (
+            <p className="mt-1 flex items-center gap-1 text-sm text-slate-500">
+              <MapPin size={14} /> {resource.location}
+            </p>
+          )}
+          {resource.price > 0 && (
+            <p className="mt-3 text-2xl font-bold text-indigo-700">
+              Rs {resource.price}
+              <span className="text-sm font-normal text-slate-500"> / hour</span>
+            </p>
+          )}
 
           <div className="mt-4 space-y-2 text-sm text-slate-600">
             <p className="flex items-center gap-2"><Layers size={16} /> Floor {resource.floor}</p>
@@ -193,6 +206,7 @@ export default function ResourceDetail() {
               required
             />
           </div>
+
           <div className="mt-4">
             <p className="mb-2 text-sm font-medium">Quick slots</p>
             <div className="flex flex-wrap gap-2">
@@ -212,6 +226,7 @@ export default function ResourceDetail() {
               ))}
             </div>
           </div>
+
           <div className="mt-4 grid grid-cols-2 gap-4">
             <div>
               <label className="mb-1 flex items-center gap-1 text-sm font-medium">
