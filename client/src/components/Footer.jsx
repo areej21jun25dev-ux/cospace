@@ -1,14 +1,13 @@
 import { Link } from 'react-router-dom';
-import { Building2, Phone, Mail, MapPin } from 'lucide-react';
+import { Phone, Mail, MapPin } from 'lucide-react';
+import Logo from './Logo';
 
 export default function Footer() {
   return (
     <footer className="mt-16 bg-indigo-900 text-indigo-100">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 md:grid-cols-3">
         <div>
-          <span className="flex items-center gap-2 text-xl font-bold text-white">
-            <Building2 size={22} /> CoSpace
-          </span>
+                    <Logo light />
           <p className="mt-3 text-sm text-indigo-200">
             Book desks and meeting rooms in seconds. Built with the MERN stack.
           </p>

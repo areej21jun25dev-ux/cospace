@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { Building2, LogOut, Menu, X } from 'lucide-react';
+import { LogOut, Menu, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import Logo from './Logo';
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -9,11 +10,11 @@ export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const links = [{ to: '/', label: 'Home' }];
-  if (user) {
-    links.push({ to: '/resources', label: 'Resources' });
-    links.push({ to: '/my-bookings', label: 'My Bookings' });
-  }
+  const links = [
+    { to: '/', label: 'Home' },
+    { to: '/resources', label: 'Resources' },
+  ];
+  if (user) links.push({ to: '/my-bookings', label: 'My Bookings' });
   if (user?.role === 'admin') links.push({ to: '/admin', label: 'Admin' });
 
   const handleLogout = () => {
@@ -31,8 +32,8 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-        <Link to="/" className="flex items-center gap-2 text-xl font-bold text-indigo-600">
-          <Building2 size={24} /> CoSpace
+        <Link to="/" aria-label="CoSpace home">
+          <Logo />
         </Link>
 
         <div className="hidden items-center gap-1 md:flex">

@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
+import { useAuth } from '../context/AuthContext';
 import {
   ArrowLeft, Armchair, Users, Layers, Check, CalendarDays, Clock,
-  AlertCircle, CheckCircle2, MapPin,
+  AlertCircle, CheckCircle2, MapPin, Lock,
 } from 'lucide-react';
 import api from '../api';
 
@@ -20,6 +21,7 @@ export default function ResourceDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
+  const { user } = useAuth();
   const quickSlots = [
     ['09:00', '10:00'], ['10:00', '11:00'], ['11:00', '12:00'],
     ['12:00', '13:00'], ['14:00', '15:00'], ['15:00', '16:00'],
@@ -60,6 +62,11 @@ export default function ResourceDetail() {
     e.preventDefault();
     setError('');
     setSuccess('');
+
+    if (!user) {
+      toast.error('Please login to book this space');
+      return navigate('/login', { state: { from: `/resources/${id}` } });
+    }
 
     if (end <= start) return setError('End time must be after start time');
 
@@ -175,6 +182,18 @@ export default function ResourceDetail() {
         >
           <h2 className="text-lg font-semibold">Book this space</h2>
 
+          {!user && (
+            <div className="mt-4 flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+              <Lock size={18} className="mt-0.5 shrink-0" />
+              <p>
+                Login or create a free account to confirm your booking.{' '}
+                <Link to="/login" state={{ from: `/resources/${id}` }} className="font-semibold underline">Login</Link>
+                {' or '}
+                <Link to="/register" state={{ from: `/resources/${id}` }} className="font-semibold underline">Sign up</Link>
+              </p>
+            </div>
+          )}
+
           {error && (
             <div className="mt-4 flex items-center gap-2 rounded-lg bg-red-50 p-3 text-sm text-red-700">
               <AlertCircle size={16} /> {error}
@@ -243,7 +262,7 @@ export default function ResourceDetail() {
           </div>
 
           <button className="btn-primary mt-6 w-full" disabled={submitting}>
-            {submitting ? 'Booking...' : 'Confirm booking'}
+            {submitting ? 'Booking...' : user ? 'Confirm booking' : 'Login to book'}
           </button>
         </form>
       </div>

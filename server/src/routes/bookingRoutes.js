@@ -12,7 +12,7 @@ const router = express.Router();
 
 router.post('/', protect, createBooking);
 router.get('/me', protect, getMyBookings);
-router.get('/resource/:id', protect, getResourceBookings);
+router.get('/resource/:id', getResourceBookings);
 router.get('/', protect, adminOnly, getAllBookings);
 router.delete('/:id', protect, cancelBooking);
 

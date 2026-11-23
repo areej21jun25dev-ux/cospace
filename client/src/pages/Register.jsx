@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import api from '../api';
 import { useAuth } from '../context/AuthContext';
@@ -12,6 +12,8 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from;
 
   const set = (key) => (e) => setForm({ ...form, [key]: e.target.value });
 
@@ -35,7 +37,7 @@ export default function Register() {
         password: form.password,
       });
       login(data);
-      navigate('/resources');
+      navigate(from || '/resources');
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
     } finally {
@@ -48,7 +50,14 @@ export default function Register() {
       title="Create your account"
       subtitle="Start booking desks and rooms today"
       error={error}
-      footer={<>Already have an account? <Link to="/login" className="font-semibold text-indigo-600">Login</Link></>}
+      footer={
+        <>
+          Already have an account?{' '}
+          <Link to="/login" state={{ from }} className="font-semibold text-indigo-600">
+            Login
+          </Link>
+        </>
+      }
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div>

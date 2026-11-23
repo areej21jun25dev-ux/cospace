@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import api from '../api';
 import { useAuth } from '../context/AuthContext';
@@ -13,6 +13,8 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,7 +23,7 @@ export default function Login() {
     try {
       const { data } = await api.post('/auth/login', { email, password });
       login(data);
-      navigate(data.role === 'admin' ? '/admin' : '/resources');
+      navigate(from || (data.role === 'admin' ? '/admin' : '/resources'));
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Is the server running?');
     } finally {
@@ -34,7 +36,14 @@ export default function Login() {
       title="Welcome back"
       subtitle="Login to book your workspace"
       error={error}
-      footer={<>New here? <Link to="/register" className="font-semibold text-indigo-600">Create an account</Link></>}
+      footer={
+        <>
+          New here?{' '}
+          <Link to="/register" state={{ from }} className="font-semibold text-indigo-600">
+            Create an account
+          </Link>
+        </>
+      }
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div>
